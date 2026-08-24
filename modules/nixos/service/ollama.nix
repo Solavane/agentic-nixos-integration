@@ -59,6 +59,7 @@ import ../../../lib/mkSystemApp.nix {
       description = "Pull or import the configured ollama model";
       after = [ "ollama.service" ];
       wantedBy = [ "multi-user.target" ];
+      environment.HOME = "/var/lib/ollama";
       serviceConfig = {
         Type = "oneshot";
         RuntimeDirectory = "ollama-pull-model";
