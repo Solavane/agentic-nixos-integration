@@ -1,4 +1,3 @@
-# modules/nixos/services/agentic-nix.nix
 { config, lib, pkgs, ... }:
 let
   cfg = config.systemApps.agentic-nix;
@@ -27,12 +26,8 @@ import ../../../lib/mkSystemApp.nix {
     })
   ];
 
-  extraConfig = {
-    programs.opencode.enable = true;
-  }
-    ++ lib.mkIf (cfg.backend == "ollama") {
+  extraConfig = lib.mkIf (cfg.backend == "ollama") {
     services.ollama.enable = true;
-    
 
     systemd.services.agentic-nix-pull-model = {
       description = "Pull the configured ollama model for agentic-nix";
