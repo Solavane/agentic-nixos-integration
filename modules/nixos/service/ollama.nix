@@ -26,6 +26,19 @@ import ../../../lib/mkSystemApp.nix {
       '';
     };
 
+    contextLength = lib.mkOption {
+      type = lib.types.ints.positive;
+      default = 32768;
+      description = ''
+        Server-wide default context window in tokens (OLLAMA_CONTEXT_LENGTH).
+        Ollama's 4096 built-in default truncates agentic workloads (large
+        system prompts, tool outputs), and the OpenAI-compatible endpoint
+        clients like opencode use has no per-request override — so this has
+        to be set on the service. Raise only as far as your VRAM allows;
+        KV cache grows linearly with this value.
+      '';
+    };
+
     modelFile = lib.mkOption {
       type = lib.types.nullOr (lib.types.either lib.types.path lib.types.str);
       default = null;
@@ -53,6 +66,7 @@ import ../../../lib/mkSystemApp.nix {
         if cfg.nvidia then pkgs.ollama-cuda
         else if cfg.amd then pkgs.ollama-rocm
         else pkgs.ollama;
+      environmentVariables.OLLAMA_CONTEXT_LENGTH = toString cfg.contextLength;
     };
 
     systemd.services.ollama-pull-model = {
