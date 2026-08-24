@@ -44,7 +44,7 @@ Do not hand-write the boilerplate. Run the generator:
 
 This drops a file already calling `mkApp`/`mkSystemApp` correctly at
 `modules/home-manager/programs/<name>.nix` or
-`modules/nixos/programs/<name>.nix`.
+`modules/nixos/service/<name>.nix`.
 
 ## 4. Fill in the generated file
 

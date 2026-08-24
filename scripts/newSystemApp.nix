@@ -3,8 +3,20 @@ writeShellApplication {
   name = "newSystemApp";
   runtimeInputs = [ pkgs.gnused ];
   text = ''
+    set -eu
     name="$1"
-    dir="modules/nixos/programs"
+
+    if [ $# -lt 1 ]; then
+      echo "Usage: newSystemApp <name>" >&2
+      exit 1
+    fi
+
+    if [ "$#" -gt 1 ]; then
+      echo "newSystemApp takes only one argument: <name>" >&2
+      exit 1
+    fi
+
+    dir="modules/nixos/service"
     file="$dir/$name.nix"
 
     if [ -f "$file" ]; then
@@ -13,14 +25,21 @@ writeShellApplication {
     fi
 
     mkdir -p "$dir"
-    cat > "$file" <<EOF
+
+    # Write Nix module using sed for variable substitution (more portable)
+    TMPFILE=$(mktemp)
+    cat > "$TMPFILE" <<INNEREOF
 { config, lib, pkgs, ... }:
 import ../../../lib/mkSystemApp.nix {
   inherit config lib pkgs;
-  name = "$name";
-  packages = [ pkgs.$name ];
+  name = "PLACEHOLDER";
+  packages = [ pkgs.PLACEHOLDER ];
 }
-EOF
+INNEREOF
+
+    sed -i "s/PLACEHOLDER/$name/g" "$TMPFILE"
+    cp "$TMPFILE" "$file"
+    rm -f "$TMPFILE"
 
     echo "created $file"
   '';
