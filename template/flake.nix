@@ -4,14 +4,14 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-  nix-core.url = "path:/home/solavane/agentic-nixos-integration";
-    nix-core.inputs.nixpkgs.follows = "nixpkgs";
+    agentic-nixos.url = "path:/home/solavane/agentic-nixos-integration";
+    agentic-nixos.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { nixpkgs, nix-core, home-manager, ... }@inputs:
+  outputs = { nixpkgs, agentic-nixos, home-manager, ... }@inputs:
   let
     mkHost = hostname: system: { desktop ? false }:
     nixpkgs.lib.nixosSystem {
@@ -24,7 +24,7 @@
       modules = [
         ./hosts/${hostname}/default.nix
         ./modules/nixos/default.nix
-        nix-core.nixosModules.default
+        agentic-nixos.nixosModules.default
 
         ({ config, lib, ... }: {
           options.nixconf.isDesktop = lib.mkEnableOption "Weather or not host is for desktop use";
@@ -38,7 +38,7 @@
             useUserPackages = true;
             sharedModules = [
               ./modules/home-manager/default.nix
-              nix-core.homeManagerModules.default
+              agentic-nixos.homeManagerModules.default
             ];
             extraSpecialArgs = { inherit inputs; };
             backupFileExtension = "bkup-home-manager-${toString inputs.self.lastModifiedDate}";
