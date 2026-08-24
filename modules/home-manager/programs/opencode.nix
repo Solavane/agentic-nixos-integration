@@ -1,7 +1,11 @@
 { config, lib, pkgs, osConfig ? null, ... }:
 let
   cfg = config.app.opencode;
-  ollamaEnabled = osConfig != null && osConfig.services.ollama.enable or false;
+  # Model comes from the OS-level ollama module — the single source of truth.
+  ollamaModel =
+    if osConfig != null then osConfig.systemApps.ollama.model or "gemma4:12b"
+    else "gemma4:12b";
+  ollamaEnabled = osConfig != null && osConfig.systemApps.ollama.enable or false;
   useHuggingface = cfg.huggingface.enable;
   useOllama = !useHuggingface && ollamaEnabled;
 in
@@ -11,12 +15,6 @@ import ../../../lib/mkApp.nix {
   native = "opencode";
 
   extraOptions = {
-    ollama.model = lib.mkOption {
-      type = lib.types.str;
-      default = "gemma4:12b";
-      description = "Ollama model opencode uses when ollama is enabled.";
-    };
-
     huggingface.enable = lib.mkEnableOption ''
       a custom LLM from HuggingFace via the Inference Providers router.
       Needs HUGGINGFACE_API_KEY in the environment.
@@ -38,12 +36,12 @@ import ../../../lib/mkApp.nix {
   extraConfig = lib.mkMerge [
     (lib.mkIf useOllama {
       programs.opencode.settings = {
-        model = "ollama/${cfg.ollama.model}";
+        model = "ollama/${ollamaModel}";
         provider.ollama = {
           npm = "@ai-sdk/openai-compatible";
           name = "Ollama";
           options.baseURL = "http://127.0.0.1:11434/v1";
-          models.${cfg.ollama.model}.name = cfg.ollama.model;
+          models.${ollamaModel}.name = ollamaModel;
         };
       };
     })
