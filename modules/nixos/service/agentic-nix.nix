@@ -42,7 +42,7 @@ import ../../../lib/mkSystemApp.nix {
   ];
 
   extraConfig = lib.mkIf (cfg.backend == "ollama") {
-    services.ollama.enable = true;
+    systemApps.ollama.enable = lib.mkDefault true;
 
     systemd.services.agentic-nix-pull-model = {
       description = "Pull or import the configured ollama model for agentic-nix";

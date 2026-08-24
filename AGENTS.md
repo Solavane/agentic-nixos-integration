@@ -18,3 +18,6 @@ These are consumed by every downstream config via `agentic-nixos.lib.*`. Treat
 signature changes (renaming params, changing defaults) as breaking — bump
 something noticeable (a comment, a CHANGELOG entry) so consumers notice on
 their next `nix flake update`.
+
+## git
+Manage adding and committing to git as a final step.
