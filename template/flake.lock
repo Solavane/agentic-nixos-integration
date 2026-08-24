@@ -8,8 +8,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1787556278,
-        "narHash": "sha256-O0zM4Qr5P9WO2qH9Nz4R+669f8FRU760eSD+f2kpEQE=",
+        "lastModified": 1787581377,
+        "narHash": "sha256-gploeFIJXB7qOoJsSG365dRQMCqva89Q54HTpC1Mx4U=",
         "path": "/home/solavane/agentic-nixos-integration",
         "type": "path"
       },
