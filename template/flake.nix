@@ -47,6 +47,9 @@
       ];
     };
   in {
+    # re-export the generators so `nix run .#newApp -- <name>` works here too
+    inherit (agentic-nixos) apps;
+
     nixosConfigurations = {
       example = mkHost "example" "x86_64-linux" { desktop = true; };
     };

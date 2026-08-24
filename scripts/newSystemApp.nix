@@ -1,22 +1,22 @@
 { pkgs, writeShellApplication }:
 writeShellApplication {
   name = "newSystemApp";
-  runtimeInputs = [ pkgs.gnused ];
   text = ''
     set -eu
-    name="$1"
 
-    if [ $# -lt 1 ]; then
+    if [ "$#" -ne 1 ]; then
       echo "Usage: newSystemApp <name>" >&2
       exit 1
     fi
 
-    if [ "$#" -gt 1 ]; then
-      echo "newSystemApp takes only one argument: <name>" >&2
+    name="$1"
+
+    if ! [[ "$name" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+      echo "invalid name '$name': use lowercase letters, digits and dashes" >&2
       exit 1
     fi
 
-    dir="modules/nixos/service"
+    dir="modules/nixos/services"
     file="$dir/$name.nix"
 
     if [ -f "$file" ]; then
@@ -26,20 +26,20 @@ writeShellApplication {
 
     mkdir -p "$dir"
 
-    # Write Nix module using sed for variable substitution (more portable)
-    TMPFILE=$(mktemp)
-    cat > "$TMPFILE" <<INNEREOF
-{ config, lib, pkgs, ... }:
-import ../../../lib/mkSystemApp.nix {
+    cat > "$file" <<EOF
+# Scaffolded by 'nix run .#newSystemApp -- $name'
+# Assumes the upstream flake input is named 'agentic-nixos'.
+{ config, lib, pkgs, inputs, ... }:
+import (inputs.agentic-nixos + "/lib/mkSystemApp.nix") {
   inherit config lib pkgs;
-  name = "PLACEHOLDER";
-  packages = [ pkgs.PLACEHOLDER ];
-}
-INNEREOF
+  name = "$name";
 
-    sed -i "s/PLACEHOLDER/$name/g" "$TMPFILE"
-    cp "$TMPFILE" "$file"
-    rm -f "$TMPFILE"
+  # Fill me in per AGENTS.md step 4 — pick one:
+  #   native option exists -> native = "$name";  (+ nativeConfig / nativeScope)
+  #   otherwise            -> packages = [ pkgs.$name ];
+  packages = [ ];
+}
+EOF
 
     echo "created $file"
   '';
