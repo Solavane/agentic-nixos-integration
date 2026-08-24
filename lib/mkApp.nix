@@ -3,6 +3,7 @@
 , extraOptions ? {}
 , packages ? []
 , native ? null
+, nativeScope ? "programs"  # parity with mkSystemApp — home-manager has services.* too (e.g. gpg-agent)
 , nativeConfig ? {}
 , extraConfig ? {}
 }:
@@ -19,6 +20,6 @@ in
     { home.packages = packages; }
     extraConfig
   ] ++ lib.optional (native != null) {
-    programs.${native} = { enable = true; } // nativeConfig;
+    ${nativeScope}.${native} = { enable = true; } // nativeConfig;
   }));
 }

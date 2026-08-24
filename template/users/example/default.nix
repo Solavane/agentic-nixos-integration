@@ -1,0 +1,4 @@
+{ ... }:
+{
+  app.opencode.enable = true;
+}

@@ -1,11 +1,11 @@
 # Installing or configuring software on this system
 
 This repo uses a convention: every installable app/service exposes a single
-toggle, `apps.<name>.enable` (home-manager, per-user) or
+toggle, `app.<name>.enable` (home-manager, per-user) or
 `systemApps.<name>.enable` (NixOS, system-wide). Follow these steps in order.
 
 ## 1. Decide scope
-- Runs as a normal user program, no root/daemon needed → home-manager (`apps.*`)
+- Runs as a normal user program, no root/daemon needed → home-manager (`app.*`)
 - Needs a systemd service, kernel module, or system-wide state (Steam, ollama,
   networking) → NixOS (`systemApps.*`)
 
@@ -29,7 +29,9 @@ This drops a file already calling `mkApp`/`mkSystemApp` correctly at
 
 ## 4. Fill in the generated file
 - If a native option exists (step 2): set `native = "<name>";` and pass any
-  settings via `nativeConfig = { ... };`.
+  settings via `nativeConfig = { ... };`. If it's a service rather than a
+  program (`services.<name>.enable`), also set `nativeScope = "services";`
+  (works in both `mkApp` and `mkSystemApp`).
 - If no native option exists: set `packages = [ pkgs.<name> ];`.
 - If the package comes from a flake input rather than nixpkgs (check
   `flake.nix` inputs first), build it in `packages` accordingly — do not
@@ -38,7 +40,7 @@ This drops a file already calling `mkApp`/`mkSystemApp` correctly at
   Config that reads those options goes in `extraConfig`.
 
 ## 5. Enable it on a host
-Add `apps.<name>.enable = true;` or `systemApps.<name>.enable = true;` to the
+Add `app.<name>.enable = true;` or `systemApps.<name>.enable = true;` to the
 relevant host's config under `hosts/<hostname>/` (or `users/<user>/` for
 home-manager).
 
