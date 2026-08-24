@@ -1,5 +1,5 @@
 {
-  description = "Agentic NixOS core — reusable modules, mkApp helpers, and scaffolding";
+  description = "Agentic NixOS Base flake for desktop LLM integration and installation";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
